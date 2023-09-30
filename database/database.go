@@ -10,13 +10,12 @@ import (
 
 var dbClient *mongo.Client
 
-// ConectarMongoDB estabelece uma conexão com o MongoDB e retorna um cliente MongoDB.
 func ConnectToMongoDB() (*mongo.Client, error) {
 	if dbClient != nil {
 		return dbClient, nil
 	}
 
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://root:examplepassword@mongodb:27017/")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatal(err)

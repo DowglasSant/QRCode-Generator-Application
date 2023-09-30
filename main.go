@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"qrcode/handlers"
 
@@ -8,10 +9,14 @@ import (
 )
 
 func main() {
+	log.Println("Running on port 8087...")
 
 	r := chi.NewRouter()
 	r.Post("/generator/", handlers.ViewCodeHandler)
 	r.HandleFunc("/", handlers.HomeHandler)
 
-	http.ListenAndServe(":8088", r)
+	err := http.ListenAndServe(":8087", r)
+	if err != nil {
+		log.Panic("Error while starting server.")
+	}
 }

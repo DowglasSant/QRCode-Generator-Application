@@ -19,7 +19,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	p := Page{Title: "QR Code Generator"}
 
 	t, _ := template.ParseFiles("templates/generator.html")
-	t.Execute(w, p)
+	err := t.Execute(w, p)
+	if err != nil {
+		http.Error(w, "Error executing template", http.StatusInternalServerError)
+		log.Println("Error executing template", err)
+		return
+	}
 }
 
 func ViewCodeHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,9 +47,9 @@ func ViewCodeHandler(w http.ResponseWriter, r *http.Request) {
 	collection := client.Database("qr_code_db").Collection("url")
 
 	newUrlRegister := models.Url{
-		URL:          dataString,
-		DataDeAdicao: time.Now(),
-		Imagem:       fileBytes,
+		URL:     dataString,
+		AddTime: time.Now(),
+		Image:   fileBytes,
 	}
 
 	_, err = collection.InsertOne(context.Background(), newUrlRegister)
@@ -55,5 +60,9 @@ func ViewCodeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "image/png")
-	w.Write(fileBytes)
+	_, err = w.Write(fileBytes)
+	if err != nil {
+		http.Error(w, "Error trying to display response.", http.StatusInternalServerError)
+		log.Println("Error trying to display response:", err)
+	}
 }

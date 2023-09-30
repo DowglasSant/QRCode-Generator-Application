@@ -1,0 +1,25 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27018:27018"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: examplepassword
+    volumes:
+      - qr-application-data:/data/db
+
+  qr-application:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qr-application
+    ports:
+      - "8087:8087"
+    depends_on:
+      - mongodb
+
+volumes:
+  qr-application-data:
